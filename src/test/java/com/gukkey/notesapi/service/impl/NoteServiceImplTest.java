@@ -139,7 +139,6 @@ class NoteServiceImplTest {
                                 .title("Original Title").body("Original Body").tag("Original Tag").build();
 
                 when(noteRepository.findById(noteId)).thenReturn(Optional.of(existingNote));
-                when(noteRepository.save(any(Note.class))).thenReturn(existingNote);
 
                 NoteDTO updatedNoteDTO = NoteDTO.builder().title("Updated Title").body("Updated Body")
                                 .tag("Updated Tag")
