@@ -125,7 +125,7 @@ public class NoteServiceImpl implements NoteService {
             response = Response.builder().status(400).message("No changes detected").build();
             return ResponseEntity.status(response.getStatus()).body(response);
         } else {
-            noteRepository.save(note);
+            noteRepository.saveAndFlush(note);
             response = Response.builder()
                     .id(note.getId())
                     .createdAt(note.getCreatedAt())
