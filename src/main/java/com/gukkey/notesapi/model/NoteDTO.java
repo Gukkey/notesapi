@@ -1,5 +1,7 @@
 package com.gukkey.notesapi.model;
 
+import java.time.LocalDateTime;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,5 +15,7 @@ public class NoteDTO {
     private String title;
 
     private String body;
+
+    private LocalDateTime updatedAt;
 
 }
