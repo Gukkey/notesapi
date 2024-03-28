@@ -4,6 +4,7 @@ import com.gukkey.notesapi.model.NoteDTO;
 import com.gukkey.notesapi.model.res.ListResponse;
 import com.gukkey.notesapi.model.res.Response;
 import com.gukkey.notesapi.service.impl.NoteServiceImpl;
+import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,47 +22,47 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(path = "/api/v0/notes", produces = MediaType.APPLICATION_JSON_VALUE)
 public class NoteController {
 
-    private final NoteServiceImpl noteService;
+  private final NoteServiceImpl noteService;
 
-    @Autowired
-    public NoteController(NoteServiceImpl noteService) {
-        this.noteService = noteService;
-    }
+  @Autowired
+  public NoteController(NoteServiceImpl noteService) {
+    this.noteService = noteService;
+  }
 
-    @GetMapping("/")
-    public ResponseEntity<ListResponse> getAllNotes(){
-        return noteService.getAllNotes();
-    }
+  @GetMapping("/")
+  public ResponseEntity<ListResponse> getAllNotes() {
+    return noteService.getAllNotes();
+  }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Response> getNoteById(@PathVariable Long id) {
-        return noteService.getNoteById(id);
-    }
+  @GetMapping("/{id}")
+  public ResponseEntity<Response> getNoteById(@PathVariable Long id) {
+    return noteService.getNoteById(id);
+  }
 
-    @PostMapping("/create")
-    public ResponseEntity<Response> postNote(@RequestBody NoteDTO noteDTO){
-        return noteService.addNote(noteDTO);
-    }
+  @PostMapping("/create")
+  public ResponseEntity<Response> postNote(@RequestBody NoteDTO noteDTO) {
+    return noteService.addNote(noteDTO);
+  }
 
-    @PutMapping("/edit/{id}")
-    public ResponseEntity<Response> editNote(@PathVariable Long id, @RequestBody NoteDTO noteDTO) {
-        return noteService.editNote(id, noteDTO);
-    }
+  @PutMapping("/edit/{id}")
+  public ResponseEntity<Response> editNote(@PathVariable Long id, @RequestBody NoteDTO noteDTO) {
+    return noteService.editNote(id, noteDTO);
+  }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Response> deleteNoteById(@PathVariable Long id) {
-        return noteService.deleteNoteById(id);
-    }
+  @DeleteMapping("/delete/{id}")
+  public ResponseEntity<Response> deleteNoteById(@PathVariable Long id) {
+    return noteService.deleteNoteById(id);
+  }
 
-    @GetMapping("")
-    public ResponseEntity<ListResponse> getNotesByTag(@RequestParam(required = false) String tag, @RequestParam(required = false) String title) {
-        if(tag == null) {
-            return noteService.findNotesByTitle(title);
-        } else if(title == null) {
-            return noteService.findNotesByTag(tag);
-        } else {
-            return noteService.findNotesByTagAndTitle(tag, title);
-        }
-    }
-
+  @GetMapping("")
+  public ResponseEntity<ListResponse> getNotesByFilter(
+      @RequestParam(required = false) String sort,
+      @RequestParam(required = false) String by,
+      @RequestParam(required = false) String tag,
+      @RequestParam(required = false) String title,
+      @RequestParam(required = false) LocalDateTime updatedAt) {
+    return noteService.findNotesByFilter(
+        sort, by, NoteDTO.builder().tag(tag).title(title).updatedAt(updatedAt).build());
+        // by is not implemented yet
+  }
 }

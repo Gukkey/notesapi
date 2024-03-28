@@ -12,7 +12,5 @@ public interface NoteService {
     ResponseEntity<Response> addNote(NoteDTO noteDTO);
     ResponseEntity<Response> editNote(Long id, NoteDTO noteDTO);
     ResponseEntity<Response> deleteNoteById(Long id);
-    ResponseEntity<ListResponse> findNotesByTag(String tag);
-    ResponseEntity<ListResponse> findNotesByTitle(String title);
-    ResponseEntity<ListResponse> findNotesByTagAndTitle(String tag, String title);
+    ResponseEntity<ListResponse> findNotesByFilter(String sort, String by, NoteDTO noteDTO);
 }
