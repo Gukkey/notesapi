@@ -1,0 +1,35 @@
+meta {
+  name: edit note
+  type: http
+  seq: 2
+}
+
+put {
+  url: http://localhost:8080/api/v0/notes/edit/9
+  body: json
+  auth: none
+}
+
+headers {
+  Accept: */*
+  Accept-Language: en-US,en
+  Access-Control-Allow-Origin: http://localhost:3000
+  Connection: keep-alive
+  Content-Type: application/json
+  Origin: http://localhost:3000
+  Referer: http://localhost:3000/
+  Sec-Fetch-Dest: empty
+  Sec-Fetch-Mode: cors
+  Sec-Fetch-Site: same-site
+  Sec-GPC: 1
+  User-Agent: Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Mobile Safari/537.36
+  sec-ch-ua: "Brave";v="123", "Not:A-Brand";v="8", "Chromium";v="123"
+  sec-ch-ua-mobile: ?1
+  sec-ch-ua-platform: "Android"
+}
+
+body:json {
+  {
+    "body": "Monday: Cario, Tuesday: Weightlifting, Wednesday: Yoga"
+  }
+}
