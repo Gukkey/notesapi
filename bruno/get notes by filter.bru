@@ -1,0 +1,16 @@
+meta {
+  name: get notes by filter
+  type: http
+  seq: 6
+}
+
+get {
+  url: http://localhost:8080/api/v0/notes?sort=updatedAt&tag=Test tag
+  body: none
+  auth: none
+}
+
+query {
+  sort: updatedAt
+  tag: Test tag
+}
