@@ -186,22 +186,51 @@ public class NoteServiceImpl implements NoteService {
     List<Note> notes = noteRepository.findAll(example);
     if (notes.isEmpty()) {
       return ResponseEntity.ok(
-          ListResponse.builder().status(404).message("No notes found").build());
-    } else {
-      if (sort.equals("updatedAt")) {
-        notes.sort(new SortNotesByUpdatedAt());
-        return ResponseEntity.ok(
-            ListResponse.builder().status(200).message("Notes found").notes(notes).build());
+          ListResponse.builder().status(404).message(NOTE_NOT_FOUND_MESSAGE).build());
+    } else if (sort != null && sort.equals("updatedAt")) {
+      notes.sort(new SortNotesByUpdatedAt());
+      if (by != null && by.equals("desc")) {
+        notes.sort(new SortNotesByUpdatedAt().reversed());
       }
-      // title and tag are not implemented yet
+      return ResponseEntity.ok(
+          ListResponse.builder().status(200).message(NOTE_FOUND_MESSAGE).notes(notes).build());
+    } else if (sort != null && sort.equals("tag")) {
+      notes.sort(new SortNotesByTag());
+      if (by != null && by.equals("desc")) {
+        notes.sort(new SortNotesByTag().reversed());
+      }
+      return ResponseEntity.ok(
+          ListResponse.builder().status(200).message(NOTE_FOUND_MESSAGE).notes(notes).build());
+    } else if (sort != null && sort.equals("title")) {
+      notes.sort(new SortNotesByTitle());
+      if (by != null && by.equals("desc")) {
+        notes.sort(new SortNotesByTitle().reversed());
+      }
+      return ResponseEntity.ok(
+          ListResponse.builder().status(200).message(NOTE_FOUND_MESSAGE).notes(notes).build());
     }
-    return null;
+    return ResponseEntity.ok(
+        ListResponse.builder().status(200).message(NOTE_FOUND_MESSAGE).notes(notes).build());
   }
 
   class SortNotesByUpdatedAt implements Comparator<Note> {
     @Override
     public int compare(Note note1, Note note2) {
       return note1.getUpdatedAt().compareTo(note2.getUpdatedAt());
+    }
+  }
+
+  class SortNotesByTag implements Comparator<Note> {
+    @Override
+    public int compare(Note note1, Note note2) {
+      return note1.getTag().compareToIgnoreCase(note2.getTag());
+    }
+  }
+
+  class SortNotesByTitle implements Comparator<Note> {
+    @Override
+    public int compare(Note note1, Note note2) {
+      return note1.getTitle().compareToIgnoreCase(note2.getTitle());
     }
   }
 }
