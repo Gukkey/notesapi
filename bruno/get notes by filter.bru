@@ -5,12 +5,13 @@ meta {
 }
 
 get {
-  url: http://localhost:8080/api/v0/notes?sort=updatedAt&tag=Test tag
+  url: http://localhost:8080/api/v0/notes?title=Test title&sort=updatedAt&by=desc
   body: none
   auth: none
 }
 
 query {
+  title: Test title
   sort: updatedAt
-  tag: Test tag
+  by: desc
 }
