@@ -188,30 +188,46 @@ public class NoteServiceImpl implements NoteService {
       return ResponseEntity.ok(
           ListResponse.builder().status(404).message(NOTE_NOT_FOUND_MESSAGE).build());
     } else if (sort != null && sort.equals("updatedAt")) {
-      notes.sort(new SortNotesByUpdatedAt());
-      if (by != null && by.equals("desc")) {
-        notes.sort(new SortNotesByUpdatedAt().reversed());
-      }
-      return ResponseEntity.ok(
-          ListResponse.builder().status(200).message(NOTE_FOUND_MESSAGE).notes(notes).build());
+      return sortNotesByUpdatedAt(by, notes);
     } else if (sort != null && sort.equals("tag")) {
-      notes.sort(new SortNotesByTag());
-      if (by != null && by.equals("desc")) {
-        notes.sort(new SortNotesByTag().reversed());
-      }
-      return ResponseEntity.ok(
-          ListResponse.builder().status(200).message(NOTE_FOUND_MESSAGE).notes(notes).build());
+      return sortNotesByTag(by, notes);
     } else if (sort != null && sort.equals("title")) {
-      notes.sort(new SortNotesByTitle());
-      if (by != null && by.equals("desc")) {
-        notes.sort(new SortNotesByTitle().reversed());
-      }
-      return ResponseEntity.ok(
-          ListResponse.builder().status(200).message(NOTE_FOUND_MESSAGE).notes(notes).build());
+      return sortNotesByTitle(by, notes);
     }
     return ResponseEntity.ok(
         ListResponse.builder().status(200).message(NOTE_FOUND_MESSAGE).notes(notes).build());
   }
+
+  // Sort methods
+
+  private ResponseEntity<ListResponse> sortNotesByUpdatedAt(String by, List<Note> notes) {
+    notes.sort(new SortNotesByUpdatedAt());
+    if (by != null && by.equals("desc")) {
+      notes.sort(new SortNotesByUpdatedAt().reversed());
+    }
+    return ResponseEntity.ok(
+        ListResponse.builder().status(200).message(NOTE_FOUND_MESSAGE).notes(notes).build());
+  }
+
+  private ResponseEntity<ListResponse> sortNotesByTag(String by, List<Note> notes) {
+    notes.sort(new SortNotesByTag());
+    if (by != null && by.equals("desc")) {
+      notes.sort(new SortNotesByTag().reversed());
+    }
+    return ResponseEntity.ok(
+        ListResponse.builder().status(200).message(NOTE_FOUND_MESSAGE).notes(notes).build());
+  }
+
+  private ResponseEntity<ListResponse> sortNotesByTitle(String by, List<Note> notes) {
+    notes.sort(new SortNotesByTitle());
+    if (by != null && by.equals("desc")) {
+      notes.sort(new SortNotesByTitle().reversed());
+    }
+    return ResponseEntity.ok(
+        ListResponse.builder().status(200).message(NOTE_FOUND_MESSAGE).notes(notes).build());
+  }
+
+  // Comparators
 
   class SortNotesByUpdatedAt implements Comparator<Note> {
     @Override
