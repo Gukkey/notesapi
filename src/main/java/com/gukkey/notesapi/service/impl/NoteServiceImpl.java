@@ -83,10 +83,6 @@ public class NoteServiceImpl implements NoteService {
       response = Response.builder().status(400).message("Error mapping note from DTO").build();
       return ResponseEntity.status(400).body(response);
     }
-    if (note.getBody() == null || note.getBody().isEmpty()) {
-      response = Response.builder().status(400).message("Body cannot be empty").build();
-      return ResponseEntity.status(400).body(response);
-    }
     noteRepository.save(note);
     response =
         Response.builder()
@@ -105,10 +101,7 @@ public class NoteServiceImpl implements NoteService {
   @Transactional
   public ResponseEntity<Response> editNote(Long id, NoteDTO noteDTO) {
     Response response;
-    if (noteDTO.getBody().equals("")) {
-      response = Response.builder().status(400).message("Body cannot be empty").build();
-      return ResponseEntity.status(response.getStatus()).body(response);
-    } else if (id == null) {
+    if (id == null) {
       response = Response.builder().status(400).message(ID_NULL_ERROR_MESSAGE).build();
       return ResponseEntity.status(response.getStatus()).body(response);
     }
