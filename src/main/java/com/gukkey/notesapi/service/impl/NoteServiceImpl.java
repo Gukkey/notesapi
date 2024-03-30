@@ -80,7 +80,7 @@ public class NoteServiceImpl implements NoteService {
     Response response;
     Note note = noteMapper.toNote(noteDTO);
     if (note == null) {
-      response = Response.builder().status(400).message("Error mapping note from DTO").build();
+      response = Response.builder().status(400).message("Error mapping note from input").build();
       return ResponseEntity.status(400).body(response);
     }
     noteRepository.save(note);
@@ -110,41 +110,32 @@ public class NoteServiceImpl implements NoteService {
       response = Response.builder().status(404).message(NOTE_NOT_FOUND_MESSAGE).build();
       return ResponseEntity.status(response.getStatus()).body(response);
     }
-    // if there is a better way to edit the note without using reflection, please
+    // if there is a better way to edit the note without using reflection or this way, please
     // make a pr.
     Note note = optionalNote.get();
-    var hasChanges = false;
     if (!Objects.isNull(noteDTO.getTitle())
         && !Objects.equals(note.getTitle(), noteDTO.getTitle())) {
       note.setTitle(noteDTO.getTitle());
-      hasChanges = true;
     }
     if (!Objects.isNull(noteDTO.getTag()) && !Objects.equals(note.getTag(), noteDTO.getTag())) {
       note.setTag(noteDTO.getTag());
-      hasChanges = true;
     }
     if (!Objects.isNull(noteDTO.getBody()) && !Objects.equals(note.getBody(), noteDTO.getBody())) {
       note.setBody(noteDTO.getBody());
-      hasChanges = true;
     }
-    if (!hasChanges) {
-      response = Response.builder().status(400).message("No changes detected").build();
-      return ResponseEntity.status(response.getStatus()).body(response);
-    } else {
-      noteRepository.saveAndFlush(note);
-      response =
-          Response.builder()
-              .id(note.getId())
-              .createdAt(note.getCreatedAt())
-              .updatedAt(note.getUpdatedAt())
-              .tag(note.getTag())
-              .title(note.getTitle())
-              .body(note.getBody())
-              .status(200)
-              .message("Note has been updated")
-              .build();
-      return ResponseEntity.status(response.getStatus()).body(response);
-    }
+    noteRepository.saveAndFlush(note);
+    response =
+        Response.builder()
+            .id(note.getId())
+            .createdAt(note.getCreatedAt())
+            .updatedAt(note.getUpdatedAt())
+            .tag(note.getTag())
+            .title(note.getTitle())
+            .body(note.getBody())
+            .status(200)
+            .message("Note has been updated")
+            .build();
+    return ResponseEntity.status(response.getStatus()).body(response);
   }
 
   public ResponseEntity<Response> deleteNoteById(Long id) {
