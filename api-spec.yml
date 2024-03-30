@@ -1,0 +1,275 @@
+openapi: "3.0.3"
+info:
+  title: NotesAPI
+  version: "0"
+  description: A simple API to manage notes
+servers:
+  - url: http://localhost:3000/api/v0
+paths:
+  "/notes":
+    get:
+      summary: Get notes with filter
+      parameters:
+        - name: title
+          in: query
+          description: Filter by title
+          required: false
+          schema:
+            type: string
+        - name: tag
+          in: query
+          description: Filter by tag
+          required: false
+          schema:
+            type: string
+        - name: updatedAt
+          in: query
+          description: Filter by updated date
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: sort
+          in: query
+          description: Sort by field
+          required: false
+          schema:
+            type: object
+            enum:
+              - title
+              - updatedAt
+              - tag
+        - name: by 
+          in: query
+          description: Sort by ascending or descending
+          required: false
+          schema:
+            type: object
+            enum:
+              - asc
+              - desc
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/NoteDTO"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseNotFound"
+  /:
+    get:
+      summary: Get all notes
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Note"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseNotFound"
+  "/notes/create":
+    post:
+      summary: Create a new note
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NoteDTO"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NoteDTO"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseMappingNote"
+
+  "/notes/{id}":
+    get:
+      summary: Get a note by id
+      parameters:
+        - name: id
+          in: path
+          description: Note id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Note"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseIdNull"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseNotFound"
+  "/notes/delete/{id}":
+    delete:
+      summary: Delete a note by id
+      parameters:
+        - name: id
+          in: path
+          description: Note id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDeleted"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/ErrorResponseNotFound"
+                  - $ref: "#/components/schemas/ErrorResponseIdNull"
+
+  "/notes/edit/{id}":
+    put:
+      summary: Update a note by id
+      parameters:
+        - name: id
+          in: path
+          description: Note id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NoteDTO"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NoteDTO"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/ErrorResponseIdNull"
+                  - $ref: "#/components/schemas/ErrorResponseNoChanges"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseNotFound"
+        
+            
+
+components:
+  schemas:
+    NoteDTO:
+      type: object
+      properties:
+        title:
+          type: string
+        tag:
+          type: string
+        body:
+          type: string
+        updatedAt:
+          type: string
+          format: date-time
+    Note: 
+      allOf:
+        - $ref: "#/components/schemas/NoteDTO"
+        - type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            createdAt: 
+              type: string
+              format: date-time
+    ErrorResponseIdNull:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 400
+        message:
+          type: string
+          example: "Id cannot be null or invalid"
+    ErrorResponseNoChanges:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 400
+        message:
+          type: string
+          example: "No changes detected"
+    ErrorResponseNotFound:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 404
+        message:
+          type: string
+          example: "Note not found"
+    ErrorResponseDeleted:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 200
+        message:
+          type: string
+          example: "Note has been deleted"
+    ErrorResponseMappingNote:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 400
+        message:
+          type: string
+          example: "Error mapping note from input"
+            
