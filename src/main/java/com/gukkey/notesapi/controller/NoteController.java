@@ -5,6 +5,9 @@ import com.gukkey.notesapi.model.res.ListResponse;
 import com.gukkey.notesapi.model.res.Response;
 import com.gukkey.notesapi.service.impl.NoteServiceImpl;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -35,7 +38,7 @@ public class NoteController {
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<Response> getNoteById(@PathVariable Long id) {
+  public ResponseEntity<Response> getNoteById(@PathVariable UUID id) {
     return noteService.getNoteById(id);
   }
 
@@ -45,12 +48,12 @@ public class NoteController {
   }
 
   @PutMapping("/edit/{id}")
-  public ResponseEntity<Response> editNote(@PathVariable Long id, @RequestBody NoteDTO noteDTO) {
+  public ResponseEntity<Response> editNote(@PathVariable UUID id, @RequestBody NoteDTO noteDTO) {
     return noteService.editNote(id, noteDTO);
   }
 
   @DeleteMapping("/delete/{id}")
-  public ResponseEntity<Response> deleteNoteById(@PathVariable Long id) {
+  public ResponseEntity<Response> deleteNoteById(@PathVariable UUID id) {
     return noteService.deleteNoteById(id);
   }
 
@@ -58,11 +61,11 @@ public class NoteController {
   public ResponseEntity<ListResponse> getNotesByFilter(
       @RequestParam(required = false) String sort,
       @RequestParam(required = false) String by,
-      @RequestParam(required = false) String tag,
+      @RequestParam(required = false) List<String> tags,
       @RequestParam(required = false) String title,
       @RequestParam(required = false) LocalDateTime updatedAt) {
     return noteService.findNotesByFilter(
-        sort, by, NoteDTO.builder().tag(tag).title(title).updatedAt(updatedAt).build());
+        sort, by, NoteDTO.builder().tags(tags).title(title).updatedAt(updatedAt).build());
         // by is not implemented yet
   }
 }

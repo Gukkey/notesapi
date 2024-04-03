@@ -1,10 +1,10 @@
 -- create_notes_table.sql
 
 CREATE TABLE notes (
-    id SERIAL PRIMARY KEY,
+    notes_id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
     created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    tag VARCHAR,
+    tags VARCHAR[],
     title VARCHAR,
     body TEXT NOT NULL
 );

@@ -10,7 +10,7 @@ public class NoteMapper {
     Note note = new Note();
     note.setUpdatedAt(noteDTO.getUpdatedAt());
     note.setTitle(noteDTO.getTitle());
-    note.setTag(noteDTO.getTag());
+    note.setTags(noteDTO.getTags());
     note.setBody(noteDTO.getBody());
     return note;
   }

@@ -12,6 +12,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.http.ResponseEntity;
@@ -50,7 +51,7 @@ public class NoteServiceImpl implements NoteService {
     return ResponseEntity.status(response.getStatus()).body(response);
   }
 
-  public ResponseEntity<Response> getNoteById(Long id) {
+  public ResponseEntity<Response> getNoteById(UUID id) {
     Response response;
     if (id == null) {
       response = Response.builder().status(400).message(ID_NULL_ERROR_MESSAGE).build();
@@ -63,7 +64,7 @@ public class NoteServiceImpl implements NoteService {
               .id(optionalNote.get().getId())
               .createdAt(optionalNote.get().getCreatedAt())
               .updatedAt(optionalNote.get().getUpdatedAt())
-              .tag(optionalNote.get().getTag())
+              .tags(optionalNote.get().getTags())
               .title(optionalNote.get().getTitle())
               .body(optionalNote.get().getBody())
               .status(200)
@@ -83,7 +84,7 @@ public class NoteServiceImpl implements NoteService {
       response = Response.builder().status(400).message("Error mapping note from input").build();
       return ResponseEntity.status(400).body(response);
     }
-    noteRepository.save(note);
+    noteRepository.saveAndFlush(note);
     response =
         Response.builder()
             .status(201)
@@ -91,7 +92,7 @@ public class NoteServiceImpl implements NoteService {
             .id(note.getId())
             .createdAt(note.getCreatedAt())
             .updatedAt(note.getUpdatedAt())
-            .tag(note.getTag())
+            .tags(note.getTags())
             .title(note.getTitle())
             .body(note.getBody())
             .build();
@@ -99,7 +100,7 @@ public class NoteServiceImpl implements NoteService {
   }
 
   @Transactional
-  public ResponseEntity<Response> editNote(Long id, NoteDTO noteDTO) {
+  public ResponseEntity<Response> editNote(UUID id, NoteDTO noteDTO) {
     Response response;
     if (id == null) {
       response = Response.builder().status(400).message(ID_NULL_ERROR_MESSAGE).build();
@@ -117,8 +118,8 @@ public class NoteServiceImpl implements NoteService {
         && !Objects.equals(note.getTitle(), noteDTO.getTitle())) {
       note.setTitle(noteDTO.getTitle());
     }
-    if (!Objects.isNull(noteDTO.getTag()) && !Objects.equals(note.getTag(), noteDTO.getTag())) {
-      note.setTag(noteDTO.getTag());
+    if (!Objects.isNull(noteDTO.getTags()) && !Objects.equals(note.getTags(), noteDTO.getTags())) {
+      note.setTags(noteDTO.getTags());
     }
     if (!Objects.isNull(noteDTO.getBody()) && !Objects.equals(note.getBody(), noteDTO.getBody())) {
       note.setBody(noteDTO.getBody());
@@ -129,7 +130,7 @@ public class NoteServiceImpl implements NoteService {
             .id(note.getId())
             .createdAt(note.getCreatedAt())
             .updatedAt(note.getUpdatedAt())
-            .tag(note.getTag())
+            .tags(note.getTags())
             .title(note.getTitle())
             .body(note.getBody())
             .status(200)
@@ -138,7 +139,7 @@ public class NoteServiceImpl implements NoteService {
     return ResponseEntity.status(response.getStatus()).body(response);
   }
 
-  public ResponseEntity<Response> deleteNoteById(Long id) {
+  public ResponseEntity<Response> deleteNoteById(UUID id) {
     Response response;
     if (id == null) {
       response = Response.builder().status(400).message(ID_NULL_ERROR_MESSAGE).build();
@@ -173,8 +174,8 @@ public class NoteServiceImpl implements NoteService {
           ListResponse.builder().status(404).message(NOTE_NOT_FOUND_MESSAGE).build());
     } else if (sort != null && sort.equals("updatedAt")) {
       return sortNotesByUpdatedAt(by, notes);
-    } else if (sort != null && sort.equals("tag")) {
-      return sortNotesByTag(by, notes);
+    } else if (sort != null && sort.equals("tags")) {
+      return sortNotesByTags(by, notes);
     } else if (sort != null && sort.equals("title")) {
       return sortNotesByTitle(by, notes);
     }
@@ -193,10 +194,10 @@ public class NoteServiceImpl implements NoteService {
         ListResponse.builder().status(200).message(NOTE_FOUND_MESSAGE).notes(notes).build());
   }
 
-  private ResponseEntity<ListResponse> sortNotesByTag(String by, List<Note> notes) {
-    notes.sort(new SortNotesByTag());
+  private ResponseEntity<ListResponse> sortNotesByTags(String by, List<Note> notes) {
+    notes.sort(new SortNotesByTags());
     if (by != null && by.equals("desc")) {
-      notes.sort(new SortNotesByTag().reversed());
+      notes.sort(new SortNotesByTags().reversed());
     }
     return ResponseEntity.ok(
         ListResponse.builder().status(200).message(NOTE_FOUND_MESSAGE).notes(notes).build());
@@ -220,10 +221,11 @@ public class NoteServiceImpl implements NoteService {
     }
   }
 
-  class SortNotesByTag implements Comparator<Note> {
+  class SortNotesByTags implements Comparator<Note> {
     @Override
     public int compare(Note note1, Note note2) {
-      return note1.getTag().compareToIgnoreCase(note2.getTag());
+      // yet to be implemented
+      return 0;
     }
   }
 
