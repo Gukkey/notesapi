@@ -1,6 +1,7 @@
 package com.gukkey.notesapi.model.res;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -13,7 +14,7 @@ import lombok.Getter;
 public class Response {
     int status;
     String message; 
-    Long id;
+    UUID id;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
     String tag;

@@ -12,6 +12,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.http.ResponseEntity;
@@ -50,7 +52,7 @@ public class NoteServiceImpl implements NoteService {
     return ResponseEntity.status(response.getStatus()).body(response);
   }
 
-  public ResponseEntity<Response> getNoteById(Long id) {
+  public ResponseEntity<Response> getNoteById(UUID id) {
     Response response;
     if (id == null) {
       response = Response.builder().status(400).message(ID_NULL_ERROR_MESSAGE).build();
@@ -99,7 +101,7 @@ public class NoteServiceImpl implements NoteService {
   }
 
   @Transactional
-  public ResponseEntity<Response> editNote(Long id, NoteDTO noteDTO) {
+  public ResponseEntity<Response> editNote(UUID id, NoteDTO noteDTO) {
     Response response;
     if (id == null) {
       response = Response.builder().status(400).message(ID_NULL_ERROR_MESSAGE).build();
@@ -138,7 +140,7 @@ public class NoteServiceImpl implements NoteService {
     return ResponseEntity.status(response.getStatus()).body(response);
   }
 
-  public ResponseEntity<Response> deleteNoteById(Long id) {
+  public ResponseEntity<Response> deleteNoteById(UUID id) {
     Response response;
     if (id == null) {
       response = Response.builder().status(400).message(ID_NULL_ERROR_MESSAGE).build();
