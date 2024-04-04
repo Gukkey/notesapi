@@ -5,6 +5,8 @@ import com.gukkey.notesapi.model.res.ListResponse;
 import com.gukkey.notesapi.model.res.Response;
 import com.gukkey.notesapi.service.impl.NoteServiceImpl;
 import java.time.LocalDateTime;
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -35,7 +37,7 @@ public class NoteController {
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<Response> getNoteById(@PathVariable Long id) {
+  public ResponseEntity<Response> getNoteById(@PathVariable UUID id) {
     return noteService.getNoteById(id);
   }
 
@@ -45,12 +47,12 @@ public class NoteController {
   }
 
   @PutMapping("/edit/{id}")
-  public ResponseEntity<Response> editNote(@PathVariable Long id, @RequestBody NoteDTO noteDTO) {
+  public ResponseEntity<Response> editNote(@PathVariable UUID id, @RequestBody NoteDTO noteDTO) {
     return noteService.editNote(id, noteDTO);
   }
 
   @DeleteMapping("/delete/{id}")
-  public ResponseEntity<Response> deleteNoteById(@PathVariable Long id) {
+  public ResponseEntity<Response> deleteNoteById(@PathVariable UUID id) {
     return noteService.deleteNoteById(id);
   }
 

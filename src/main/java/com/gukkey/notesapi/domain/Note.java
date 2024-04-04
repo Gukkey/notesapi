@@ -1,6 +1,7 @@
 package com.gukkey.notesapi.domain;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -23,9 +24,9 @@ import lombok.NoArgsConstructor;
 @Table(name = "notes")
 public class Note {
     @Id
-    @Column(name = "id", nullable = false)
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "notes_id", nullable = false, updatable = false)
+    @GeneratedValue(generator = "UUID")
+    private UUID id;
 
     @Column(name = "created_at", updatable = false)
     @CreationTimestamp
