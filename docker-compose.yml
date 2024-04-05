@@ -1,0 +1,28 @@
+services:
+  database:
+    image: postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    volumes:
+        - ./postgres_data:/var/lib/postgresql/data
+
+  backend:
+    image: backend
+    build: 
+      context: .
+      dockerfile: /Dockerfile
+    restart: on-failure
+    ports:
+      - "8080:8080"
+    depends_on:
+      - database
+    volumes:
+      - .:/usr/app
+    environment:
+      - POSTGRES_USER=notesapi
+      - POSTGRES_PASSWORD=notesapi
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://database:5432/notesapi
+      - SPRING_DATASOURCE_USERNAME=notesapi
+      - SPRING_DATASOURCE_PASSWORD=notesapi
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
