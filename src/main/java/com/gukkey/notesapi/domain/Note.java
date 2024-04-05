@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "notes")
 public class Note {
     @Id
-    @Column(name = "notes_id", nullable = false, updatable = false)
+    @Column(name = "id", nullable = false, updatable = false)
     @GeneratedValue(generator = "UUID")
     private UUID id;
 
