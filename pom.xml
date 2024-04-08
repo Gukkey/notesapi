@@ -12,14 +12,33 @@
     <groupId>com.gukkey</groupId>
     <artifactId>notesapi</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+
     <name>Notes API</name>
     <description>API for notes</description>
+    <url>https://github.com/gukkey/notesapi</url>
+    <inceptionYear>2024</inceptionYear>
+
     <properties>
         <executable-suffix/>
         <distribution.directory>${project.build.directory}/distributions</distribution.directory>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>16</maven.compiler.release>
     </properties>
+
+    <developers>
+        <developer>
+            <id>gukkey</id>
+            <name>Guhan</name>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:https://github.com/gukkey/app.git</connection>
+        <developerConnection>scm:git:https://github.com/gukkey/app.git</developerConnection>
+        <url>https://github.com/gukkey/app.git</url>
+        <tag>HEAD</tag>
+    </scm>
+
     <dependencies>
 
         <!--Adding these core dependencies to overcome vulnerabilities, should remove these once the
@@ -95,6 +114,47 @@
     </dependencies>
 
     <profiles>
+        <profile>
+            <id>publication</id>
+            <properties>
+                <altDeploymentRepository>local::file:./target/staging-deploy</altDeploymentRepository>
+            </properties>
+            <build>
+                <defaultGoal>deploy</defaultGoal>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                                <configuration>
+                                    <attach>true</attach>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                                <configuration>
+                                    <attach>true</attach>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
         <!-- The dist profile configures the assembly plugin, and it’s configured in such a way that it must be activated explicitly by passing -Pdist as a command flag. On the other hand the dist-windows profile becomes active automatically when the build is run on a Windows platform. This second profile takes care of setting the value for the executable-suffix property which is required by the assembly descriptor -->
         <profile>
             <id>dist</id>
@@ -146,6 +206,52 @@
                         <groupId>org.jreleaser</groupId>
                         <artifactId>jreleaser-maven-plugin</artifactId>
                         <version>1.11.0</version>
+                        <configuration>
+                            <jreleaser>
+                                <release>
+                                    <github>
+                                        <changelog>
+                                            <formatted>ALWAYS</formatted>
+                                            <preset>conventional-commits</preset>
+                                        </changelog>
+                                    </github>
+                                </release>
+                                <distributions>
+                                    <app>
+                                        <type>BINARY</type>
+                                        <artifacts>
+                                            <artifact>
+                                                <path>${distribution.directory}/{{distributionName}}-{{projectVersion}}-linux-x86_64.tar.gz</path>
+                                                <platform>linux-x86_64</platform>
+                                            </artifact>
+                                            <artifact>
+                                                <path>${distribution.directory}/{{distributionName}}-{{projectVersion}}-windows-x86_64.zip</path>
+                                                <platform>windows-x86_64</platform>
+                                            </artifact>
+                                            <artifact>
+                                                <path>${distribution.directory}/{{distributionName}}-{{projectVersion}}-osx-x86_64.zip</path>
+                                                <platform>osx-x86_64</platform>
+                                            </artifact>
+                                        </artifacts>
+                                    </app>
+                                </distributions>
+                                <project>
+                                    <description>NotesAPI - A simple and robust API for a note talking application</description>
+                                    <links>
+                                        <homepage>
+                                           https://github.com/Gukkey/notesapi
+                                        </homepage>
+                                        <documentation>https://github.com/Gukkey/notesapi</documentation>
+                                    </links>
+                                    <license>APACHE-2.0</license>
+                                    <authors>Guhan</authors>
+                                    <copyright>2023 Guhan</copyright>
+                                    <copyright>Your Copyright Notice Here</copyright>
+                                    <!-- Other project configurations -->
+                                </project>
+                                <!-- Other JReleaser configurations -->
+                            </jreleaser>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>
@@ -161,6 +267,26 @@
             </extension>
         </extensions>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>3.1.1</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.12.1</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.6.3</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.3.0</version>
+            </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
