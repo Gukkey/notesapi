@@ -11,7 +11,7 @@
     </parent>
     <groupId>com.gukkey</groupId>
     <artifactId>notesapi</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
 
     <name>Notes API</name>
     <description>API for notes</description>
@@ -19,7 +19,6 @@
     <inceptionYear>2024</inceptionYear>
 
     <properties>
-        <executable-suffix/>
         <distribution.directory>${project.build.directory}/distributions</distribution.directory>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>16</maven.compiler.release>
@@ -29,13 +28,18 @@
         <developer>
             <id>gukkey</id>
             <name>Guhan</name>
+            <email>gukkey@protonmail.com</email>
+        </developer>
+        <developer>
+            <id>shiyaamsunder</id>
+            <name>Shiyaam</name>
         </developer>
     </developers>
 
     <scm>
         <connection>scm:git:https://github.com/gukkey/app.git</connection>
         <developerConnection>scm:git:https://github.com/gukkey/app.git</developerConnection>
-        <url>https://github.com/gukkey/app.git</url>
+        <url>https://github.com/gukkey/notesapi</url>
         <tag>HEAD</tag>
     </scm>
 
@@ -209,6 +213,11 @@
                         <configuration>
                             <jreleaser>
                                 <release>
+                                    <files>true</files>
+                                    <artifacts>true</artifacts>
+                                    <checksums>true</checksums>
+                                    <signatures>true</signatures>
+                                    <catalogs>true</catalogs>
                                     <github>
                                         <changelog>
                                             <formatted>ALWAYS</formatted>
@@ -218,9 +227,15 @@
                                 </release>
                                 <distributions>
                                     <app>
-                                        <type>BINARY</type>
+                                        <active>ALWAYS</active>
+                                        <type>SINGLE_JAR</type>
+                                        <stereotype>CLI</stereotype>
+                                        <executable>
+                                            <unixExtension>sh</unixExtension>
+                                            <windowsExtension>cmd</windowsExtension>
+                                        </executable>
                                         <artifacts>
-                                            <artifact>
+                                            <!-- <artifact>
                                                 <path>${distribution.directory}/{{distributionName}}-{{projectVersion}}-linux-x86_64.tar.gz</path>
                                                 <platform>linux-x86_64</platform>
                                             </artifact>
@@ -231,7 +246,13 @@
                                             <artifact>
                                                 <path>${distribution.directory}/{{distributionName}}-{{projectVersion}}-osx-x86_64.zip</path>
                                                 <platform>osx-x86_64</platform>
+                                            </artifact> -->
+                                            <artifact>
+                                                <path>
+                                                ${distribution.directory}/{{distributionName}}-{{projectVersion}}.jar
+                                                </path>
                                             </artifact>
+
                                         </artifacts>
                                     </app>
                                 </distributions>
@@ -287,6 +308,13 @@
                 <artifactId>maven-source-plugin</artifactId>
                 <version>3.3.0</version>
             </plugin>
+            <plugin>
+                <groupId>org.jreleaser</groupId>
+                <artifactId>jreleaser-maven-plugin</artifactId>
+                <version>1.11.0</version>
+                <!-- ... -->
+            </plugin>
+
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>

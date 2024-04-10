@@ -5,6 +5,7 @@
         <format>tar.gz</format>
         <format>zip</format>
         <format>dir</format>
+        <format>jar</format>
     </formats>
     <files>
         <file>
