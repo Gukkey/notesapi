@@ -11,7 +11,7 @@
     </parent>
     <groupId>com.gukkey</groupId>
     <artifactId>notesapi</artifactId>
-    <version>0.0.2-SNAPSHOT</version>
+    <version>0.0.2</version>
 
     <name>Notes API</name>
     <description>API for notes</description>
@@ -19,7 +19,7 @@
     <inceptionYear>2024</inceptionYear>
 
     <properties>
-        <distribution.directory>${project.build.directory}/distributions</distribution.directory>
+        <app.distribution.directory>${project.build.directory}/distributions</app.distribution.directory>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>16</maven.compiler.release>
     </properties>
@@ -219,6 +219,34 @@
                                     <signatures>true</signatures>
                                     <catalogs>true</catalogs>
                                     <github>
+                                        <owner>gukkey</owner>
+                                        <name>notesapi</name>
+                                        <tagName>v{{projectVersion}}</tagName>
+                                        <releaseName>Release {{projectVersion}}</releaseName>
+                                        <uploadAssets>ALWAYS</uploadAssets>
+                                        <files>true</files>
+                                        <checksums>true</checksums>
+                                        <artifacts>true</artifacts>
+                                        <overwrite>true</overwrite>
+                                        <update>
+                                            <!--
+          Appends artifacts to an existing release with matching tag,
+          useful if `overwrite` is set to `false`.
+          Defaults to `false`.
+           
+        -->
+                                            <enabled>true</enabled>
+
+                                            <!--
+          Release sections to be updated.
+          Supported values are [`TITLE`, `BODY`, `ASSETS`].
+          Defaults to `ASSETS`.
+          
+        -->
+                                            <sections>
+                                                <section>ASSETS</section>
+                                            </sections>
+                                        </update>
                                         <changelog>
                                             <formatted>ALWAYS</formatted>
                                             <preset>conventional-commits</preset>
@@ -314,7 +342,19 @@
                 <version>1.11.0</version>
                 <!-- ... -->
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>${com.gukkey.notesapi}</mainClass>
+                        </manifest>
 
+                    </archive>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
