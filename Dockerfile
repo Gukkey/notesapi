@@ -14,6 +14,6 @@ RUN chmod +x ./mvnw
 
 RUN cp ./src/main/resources/application.yml.example ./src/main/resources/application.yml
 
-RUN ./mvnw clean install -Dmaven.test.skip=true
+RUN ./mvnw clean install
 
 ENTRYPOINT ["java", "-Xmx2048M", "-jar", "./target/notesapi-0.0.1-SNAPSHOT.jar"]
