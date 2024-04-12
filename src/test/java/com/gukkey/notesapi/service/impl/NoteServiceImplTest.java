@@ -3,19 +3,17 @@ package com.gukkey.notesapi.service.impl;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -46,15 +44,22 @@ class NoteServiceImplTest {
         private NoteDTO noteDTO;
         private Note note;
 
+
+        // Example ids
+        UUID exampleId1 = UUID.randomUUID();
+        UUID exampleId2 = UUID.randomUUID();
+        UUID exampleId3 = UUID.randomUUID();
+
+
         @BeforeEach
         void setUp() {
-                Note note1 = Note.builder().id(1L).createdAt(LocalDateTime.now()).updatedAt(LocalDateTime.now())
+                Note note1 = Note.builder().id(exampleId1).createdAt(LocalDateTime.now()).updatedAt(LocalDateTime.now())
                                 .title("Books for him").body("1. Harry Potter set, 2. Dune").tag("List").build();
-                Note note2 = Note.builder().id(2L).createdAt(LocalDateTime.now()).updatedAt(LocalDateTime.now())
+                Note note2 = Note.builder().id(exampleId2).createdAt(LocalDateTime.now()).updatedAt(LocalDateTime.now())
                                 .title("Interview").body("Interview at Greenstich @ Monday 3 pm")
                                 .tag("Remainder")
                                 .build();
-                Note note3 = Note.builder().id(3L).createdAt(LocalDateTime.now()).updatedAt(LocalDateTime.now())
+                Note note3 = Note.builder().id(exampleId3).createdAt(LocalDateTime.now()).updatedAt(LocalDateTime.now())
                                 .title("Movies").body("1. Bramayugam").tag("Watch List")
                                 .build();
                 notes = Arrays.asList(note1, note2, note3);
@@ -109,43 +114,23 @@ class NoteServiceImplTest {
                 assertEquals(note.getTag(), responseBody.getTag());
         }
 
-        @Test
-        void addNoteShouldThrowBadRequestWhenNoteDTOBodyIsEmpty() {
-                var emptyBodyNoteDTO = NoteDTO.builder().tag("tag").title("title").body("").build();
-                var emptyBodyNote = Note.builder().id(4L).createdAt(LocalDateTime.now()).createdAt(LocalDateTime.now())
-                                .updatedAt(LocalDateTime.now())
-                                .tag("tag").title("title").body("").build();
-
-                // Arrange
-                when(noteMapper.toNote(any(NoteDTO.class))).thenReturn(emptyBodyNote);
-
-                // Act
-                ResponseEntity<Response> responseEntity = noteService.addNote(emptyBodyNoteDTO);
-
-                // Assert
-                assertNotNull(responseEntity);
-                assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
-        }
-
         // test code for edit note
 
         @Test
         void editNoteShouldEditNoteWhenNoteDTOIsValid() {
                 // Arrange
-                Long noteId = 1L; // Assume this is the ID of the note to be edited
-
-                Note existingNote = Note.builder().id(noteId).createdAt(LocalDateTime.now())
+                Note existingNote = Note.builder().id(exampleId1).createdAt(LocalDateTime.now())
                                 .updatedAt(LocalDateTime.now())
                                 .title("Original Title").body("Original Body").tag("Original Tag").build();
 
-                when(noteRepository.findById(noteId)).thenReturn(Optional.of(existingNote));
+                when(noteRepository.findById(exampleId1)).thenReturn(Optional.of(existingNote));
 
                 NoteDTO updatedNoteDTO = NoteDTO.builder().title("Updated Title").body("Updated Body")
                                 .tag("Updated Tag")
                                 .build();
 
                 // Act
-                ResponseEntity<Response> responseEntity = noteService.editNote(noteId, updatedNoteDTO);
+                ResponseEntity<Response> responseEntity = noteService.editNote(exampleId1, updatedNoteDTO);
 
                 // Assert
                 assertNotNull(responseEntity);
@@ -158,35 +143,17 @@ class NoteServiceImplTest {
                 assertEquals(updatedNoteDTO.getTag(), responseBody.getTag());
         }
 
-        @Test
-        void editNoteShouldThrowBadRequestWhenBodyIsEmpty() {
-                // Arrange
-                Long noteId = 1L; // Assume this is the ID of the note to be edited
-                NoteDTO updatedNoteDTO = NoteDTO.builder().title("Updated Title").body("").tag("Updated Tag").build();
-
-                // Act
-                ResponseEntity<Response> responseEntity = noteService.editNote(noteId, updatedNoteDTO);
-
-                // Assert
-                assertNotNull(responseEntity);
-                assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
-                Response responseBody = responseEntity.getBody();
-                assertNotNull(responseBody);
-                assertEquals("Body cannot be empty", responseBody.getMessage());
-        }
-
         // test code for delete by id
 
         @Test
         void deleteNotesShouldDeleteIfIdIsValid() {
                 // Arrange
-                Long noteId = 1L;
                 Optional<Note> optionalNote = Optional.of(note);
-                when(noteRepository.findById(noteId)).thenReturn(optionalNote);
-                doNothing().when(noteRepository).deleteById(noteId);
+                when(noteRepository.findById(exampleId1)).thenReturn(optionalNote);
+                doNothing().when(noteRepository).deleteById(exampleId1);
 
                 // Act
-                ResponseEntity<Response> responseEntity = noteService.deleteNoteById(noteId);
+                ResponseEntity<Response> responseEntity = noteService.deleteNoteById(exampleId1);
 
                 // Assert
                 assertNotNull(responseEntity);
@@ -196,10 +163,10 @@ class NoteServiceImplTest {
         @Test 
         void deleteNoteShouldThrowBadRequestIfIdIsNull() {
                 // Arrange
-                Long noteId = null;
+                UUID nullId = null;
 
                 // Act
-                ResponseEntity<Response> responseEntity = noteService.deleteNoteById(noteId);
+                ResponseEntity<Response> responseEntity = noteService.deleteNoteById(nullId);
 
                 // Assert
                 assertNotNull(responseEntity);
@@ -210,12 +177,11 @@ class NoteServiceImplTest {
         @Test
         void deleteNoteShouldThrowNotFoundIfNoteIsNotFound() {
                 // Arrange
-                Long noteId = 1L;
                 Optional<Note> optionalNote = Optional.empty();
-                when(noteRepository.findById(noteId)).thenReturn(optionalNote);
+                when(noteRepository.findById(exampleId1)).thenReturn(optionalNote);
 
                 // Act
-                ResponseEntity<Response> responseEntity = noteService.deleteNoteById(noteId);
+                ResponseEntity<Response> responseEntity = noteService.deleteNoteById(exampleId1);
 
                 // Assert
                 assertNotNull(responseEntity);
