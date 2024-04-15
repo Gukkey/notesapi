@@ -3,17 +3,15 @@ package com.gukkey.notesapi.service.impl;
 import com.gukkey.notesapi.domain.User;
 import com.gukkey.notesapi.mapper.UserMapper;
 import com.gukkey.notesapi.model.UserDTO;
-import com.gukkey.notesapi.model.res.Response;
+import com.gukkey.notesapi.model.res.UserListResponse;
 import com.gukkey.notesapi.model.res.UserResponse;
-import com.gukkey.notesapi.repository.NoteRepository;
 import com.gukkey.notesapi.repository.UserRepository;
 import com.gukkey.notesapi.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 
 public class UserServiceImpl implements UserService {
 
@@ -46,8 +44,16 @@ public class UserServiceImpl implements UserService {
     return ResponseEntity.status(userResponse.getStatus()).body(userResponse);
   }
 
-  public List<ResponseEntity<UserResponse>> getAllUsers() {
-    return List.of();
+  public ResponseEntity<UserListResponse> getAllUsers() {
+    UserListResponse userListResponse;
+    List<User> userList = userRepository.findAll();
+    if (userList.isEmpty()) {
+      userListResponse = UserListResponse.builder().status(404).message("Users not found").build();
+    } else {
+      userListResponse =
+          UserListResponse.builder().status(200).message("Notes found").userList(userList).build();
+    }
+    return ResponseEntity.status(userListResponse.getStatus()).body(userListResponse);
   }
 
   public ResponseEntity<UserResponse> getUser(UUID id) {
@@ -70,9 +76,5 @@ public class UserServiceImpl implements UserService {
     }
     userResponse = UserResponse.builder().status(400).message("Id is null").build();
     return ResponseEntity.status(userResponse.getStatus()).body(userResponse);
-  }
-
-  public List<ResponseEntity<Response>> getAllNotes(UUID id) {
-    return List.of();
   }
 }
