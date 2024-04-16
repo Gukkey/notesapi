@@ -6,10 +6,12 @@ import static org.mockito.Mockito.when;
 import com.gukkey.notesapi.domain.User;
 import com.gukkey.notesapi.mapper.UserMapper;
 import com.gukkey.notesapi.model.UserDTO;
+import com.gukkey.notesapi.model.res.UserListResponse;
 import com.gukkey.notesapi.model.res.UserResponse;
 import com.gukkey.notesapi.repository.UserRepository;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,8 +36,6 @@ class UserServiceImplTest {
   UUID exampleNoteId2 = UUID.randomUUID();
   UUID exampleNoteId3 = UUID.randomUUID();
   UUID exampleNoteId4 = UUID.randomUUID();
-  UUID exampleNoteId5 = UUID.randomUUID();
-  UUID exampleNoteId6 = UUID.randomUUID();
 
   User user1 =
       User.builder()
@@ -102,6 +102,74 @@ class UserServiceImplTest {
 
   // Tests for getAllUsers()
 
+  // Test method if user lists are empty
+
+  @Test
+  void getAllUsersShouldReturn404IfThereAreNoUserLists() {
+    // Arrange
+    when(userRepository.findAll()).thenReturn(List.of());
+
+    // Act
+    ResponseEntity<UserListResponse> responseEntity = userService.getAllUsers();
+
+    // Assert
+    assertNotNull(responseEntity);
+    assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
+  }
+
+  // Test method if the service returns valid user list
+  @Test
+  void getAllUsersShouldReturnUserListIfThereAreUsers() {
+    // Arrange
+    when(userRepository.findAll()).thenReturn(List.of(user1, user2, user3));
+
+    // Act
+    ResponseEntity<UserListResponse> responseEntity = userService.getAllUsers();
+
+    // Assert
+    assertNotNull(responseEntity);
+    assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+  }
+
   // Tests for getUser()
 
+  //  Test method if id is null
+  @Test
+  void getUserShouldThrow400IfIdIsNull() {
+    // Act
+    ResponseEntity<UserResponse> responseEntity = userService.getUser(null);
+
+    // Assert
+    assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+  }
+
+  // Test method is user not found
+
+  @Test
+  void getUserShouldThrow404IfUserNotFound() {
+    // Arrange
+    Optional<User> emptyUser = Optional.empty();
+    when(userRepository.findById(exampleUserId1)).thenReturn(emptyUser);
+
+    // Act
+    ResponseEntity<UserResponse> responseEntity = userService.getUser(exampleUserId1);
+
+    // Assert
+    assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
+  }
+
+  // Test method is user is found
+
+  @Test
+  void getUserShouldReturnUserIfConditionsAreValid() {
+    // Arrange
+    Optional<User> optional = Optional.of(user1);
+    when(userRepository.findById(exampleUserId1)).thenReturn(optional);
+
+    // Act
+    ResponseEntity<UserResponse> responseEntity = userService.getUser(exampleUserId1);
+
+    // Arrange
+    assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+  }
 }
